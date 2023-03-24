@@ -1,0 +1,19 @@
+import pandas as pd
+
+# Define the criteria
+max_price = 50.0
+min_profit = 0
+min_pe_ratio = 0
+max_pb_ratio = 1
+
+# Load the financial data into a Pandas DataFrame
+financial_data = pd.read_csv('financial_data.csv')
+
+# Filter the companies based on the criteria
+filtered_data = financial_data[(financial_data['Price'] <= max_price) &
+                               (financial_data['Profit'] >= min_profit) &
+                               (financial_data['PE Ratio'] >= min_pe_ratio) &
+                               (financial_data['PB Ratio'] <= max_pb_ratio)]
+
+# Export the filtered data to an Excel file
+filtered_data.to_excel('filtered_data.xlsx', index=False)
