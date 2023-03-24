@@ -1,0 +1,33 @@
+import pandas as pd
+
+# Load the financial data into a Pandas DataFrame
+financial_data = pd.read_csv('financial_data.csv')
+
+# Calculate the Price to Earnings (P/E) Ratio for each company
+financial_data['P/E Ratio'] = financial_data['Price'] / financial_data['Earnings per Share']
+
+# Calculate the Price to Book Value (P/B) Ratio for each company
+financial_data['P/B Ratio'] = financial_data['Price'] / financial_data['Book Value per Share']
+
+# Calculate the Dividend Yield for each company
+financial_data['Dividend Yield'] = financial_data['Dividend per Share'] / financial_data['Price']
+
+# Calculate the Earnings per Share (EPS) Growth Rate for each company
+financial_data['EPS Growth Rate'] = (financial_data['Earnings per Share'] / financial_data.groupby('Company')['Earnings per Share'].shift(1)) - 1
+
+# Calculate the Earnings per Share (EPS) Stability for each company
+financial_data['EPS Stability'] = financial_data.groupby('Company')['EPS Growth Rate'].apply(lambda x: x.std() / x.mean())
+
+# Calculate the Debt to Equity Ratio for each company
+financial_data['Debt to Equity Ratio'] = financial_data['Total Debt'] / financial_data['Shareholders Equity']
+
+# Filter out companies that do not meet the criteria from "The Intelligent Investor"
+value_stocks = financial_data[(financial_data['P/E Ratio'] < 15) &
+                              (financial_data['P/B Ratio'] < 1.5) &
+                              (financial_data['Dividend Yield'] >= 2.5) &
+                              (financial_data['EPS Growth Rate'] >= 0) &
+                              (financial_data['EPS Stability'] < 0.1) &
+                              (financial_data['Debt to Equity Ratio'] <= 1)]
+
+# Output the results
+value_stocks.to_csv('value_stocks.csv', index=False)
