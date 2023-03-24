@@ -1,0 +1,25 @@
+import pandas as pd
+import numpy as np
+
+# Load the financial data into a Pandas DataFrame
+financial_data = pd.read_csv('financial_data.csv')
+
+# Calculate the basic financial ratios
+financial_data['EPS'] = financial_data['Earnings'] / financial_data['Shares']
+financial_data['PE Ratio'] = financial_data['Price'] / financial_data['EPS']
+financial_data['Book Value'] = financial_data['Equity'] / financial_data['Shares']
+financial_data['PB Ratio'] = financial_data['Price'] / financial_data['Book Value']
+
+# Calculate the average ratios for the sector
+sector_data = financial_data.groupby('Sector').mean()[['EPS', 'PE Ratio', 'Book Value', 'PB Ratio']]
+sector_data.columns = ['Sector EPS', 'Sector PE Ratio', 'Sector Book Value', 'Sector PB Ratio']
+
+# Join the sector data back to the financial data
+financial_data = financial_data.join(sector_data, on='Sector')
+
+# Calculate the relative ratios to the sector averages
+financial_data['Relative PE Ratio'] = financial_data['PE Ratio'] / financial_data['Sector PE Ratio']
+financial_data['Relative PB Ratio'] = financial_data['PB Ratio'] / financial_data['Sector PB Ratio']
+
+# Output the results
+financial_data.to_csv('financial_analysis.csv', index=False)
